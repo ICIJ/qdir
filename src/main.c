@@ -38,7 +38,7 @@
 #endif
 
 static redisContext *redis_c;
-static char *queue_name = "qdir:queue";
+static char *queue_name = "qdir";
 static bool ignore_hidden = true;
 static bool verbose = false;
 
@@ -117,20 +117,20 @@ int connect_to_redis(const char *hostname, const int port) {
 }
 
 void print_help() {
-	printf("Qdir v1.0.0\n");
+	printf("\033[1mQdir\033[0m v1.0.0\n");
 	printf("Fast, recursive queueing of files from a directory tree to Redis.\n\n");
-	printf("Options\n\n");
+	printf("\033[1mOptions\033[0m\n\n");
 	printf("-v\t\tBe verbose.\n");
 	printf("-a\t\tThe Redis server's listen address. Defaults to 127.0.0.1.\n");
 	printf("-p\t\tThe Redis server port. Defaults to 6379.\n");
-	printf("-q\t\tThe name of the queue (list) in Redis.\n");
+	printf("-q\t\tThe name of the queue (list) in Redis. Defaults to \"%s\".\n", queue_name);
 	printf("-i\t\tInclude hidden files and don't skip hidden directories.\n");
 	printf("-h\t\tShow this screen.\n");
 	printf("\n");
-	printf("Author\n\n");
+	printf("\033[1mAuthor\033[0m\n\n");
 	printf("Matthew Caruana Galizia <mcaruana@icij.org>\n\n");
-	printf("Issues\n\n");
-	printf("https://github.com/ICIJ/qdir/issues\n");
+	printf("\033[1mIssues\033[0m\n\n");
+	printf("https://github.com/ICIJ/qdir/issues\n\n");
 }
 
 void print_usage() {
