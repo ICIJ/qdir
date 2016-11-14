@@ -1,6 +1,6 @@
 # Qdir
 
-A CLI program for putting every path in a directory tree into a Redis list.
+A CLI program for putting every file path in a directory tree into a Redis list.
 
 # Usage
 

@@ -1,4 +1,4 @@
-OBJECTS = qdir.o
+OBJECTS := qdir.o
 
 default: qdir
 	@echo "Building default..."
