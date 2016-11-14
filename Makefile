@@ -10,6 +10,6 @@ qdir: $(OBJECTS)
 	gcc -o $@ $^ `pkg-config --cflags --libs hiredis`
 
 clean:
-	-rm -f qdir $(OBJECTS)
+	rm -f qdir $(OBJECTS)
 
 .PHONY: clean

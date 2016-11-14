@@ -38,6 +38,7 @@
 #endif
 
 static redisContext *redis_c;
+static char *queue_name = "qdir:queue";
 static bool verbose = false;
 
 int queue_entry(const char *filepath, const struct stat *info, const int typeflag, struct FTW *pathinfo) {
@@ -52,7 +53,7 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 			printf(" %s\n", filepath);
 		}
 
-		freeReplyObject(redisCommand(redis_c,"LPUSH extract:queue %s", filepath));
+		freeReplyObject(redisCommand(redis_c,"LPUSH %s %s", queue_name, filepath));
 	} else if (typeflag == FTW_D || typeflag == FTW_DP) {
 		if (verbose) {
 			printf("Entering directory \"%s\".../\n", filepath);
@@ -126,7 +127,6 @@ int main(int argc, char *argv[]) {
 	// Default values for parameters.
 	int redis_port = 6379;
 	char *redis_address = "127.0.0.1";
-	char *queue_name = "qdir:queue";
 	
 	// Parse our arguments.
 	int option = 0;
