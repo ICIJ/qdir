@@ -3,7 +3,7 @@
 //  Qdir
 //
 //  Created by Matthew Caruana Galizia on 11/11/2016.
-//  Copyright © 2016 International Consortium of Investigative Journalists. All rights reserved.
+//  Copyright © 2016 Matthew Caruana Galizia. All rights reserved.
 //
 
 #define _GNU_SOURCE 1
