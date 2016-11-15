@@ -61,6 +61,8 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 		} else {
 			freeReplyObject(redisCommand(redis_c,"LPUSH %s %s", queue_name, filepath));
 		}
+
+		free(filename);
 	} else if (typeflag == FTW_D || typeflag == FTW_DP) {
 		char *dirname = basename(strdup(filepath));
 
@@ -72,6 +74,8 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 		if (verbose) {
 			printf("Entering directory \"%s\".../\n", filepath);
 		}
+
+		free(dirname);
 	} else if (typeflag == FTW_DNR) {
 		printf("ERROR %s/ (unreadable)\n", filepath);
 	} else {
