@@ -42,76 +42,78 @@ static char *queue_name = "qdir";
 static bool ignore_hidden = true;
 static bool verbose = false;
 
-int queue_entry(const char *filepath, const struct stat *info, const int typeflag, struct FTW *pathinfo) {
+int queue_entry(const char *path, const struct stat *info, const int typeflag, struct FTW *pathinfo) {
 	/* const char *const filename = filepath + pathinfo->base; */
-	
+
 	if (typeflag == FTW_SL) {
-		printf("WARNING Ignoring link: \"%s\".\n", filepath);
+		printf("WARNING Ignoring link: \"%s\".\n", path);
 	} else if (typeflag == FTW_SLN) {
-		printf("WARNING %s (dangling symlink)\n", filepath);
+		printf("WARNING %s (dangling symlink)\n", path);
 	} else if (typeflag == FTW_F) {
-		char *filename = basename(strdup(filepath));
+		char *file_path = strdup(path);
+		char *base_name = basename(file_path);
 
 		if (verbose) {
-			printf("Queueing %s...\n", filepath);
+			printf("Queueing %s...\n", path);
 		}
 
-		if (ignore_hidden && '.' == filename[0]) {
+		if (ignore_hidden && '.' == base_name[0]) {
 			if (verbose) {
-				printf("Skipping hidden file \"%s\".../\n", filepath);
+				printf("Skipping hidden file \"%s\".../\n", path);
 			}
 		} else {
-			freeReplyObject(redisCommand(redis_c,"LPUSH %s %s", queue_name, filepath));
+			freeReplyObject(redisCommand(redis_c,"LPUSH %s %s", queue_name, path));
 		}
 
-		free(filename);
+		free(file_path);
 	} else if (typeflag == FTW_D || typeflag == FTW_DP) {
-		char *dirname = basename(strdup(filepath));
+		char *dir_path = strdup(path);
+		char *base_name = basename(dir_path);
 
-		if (ignore_hidden && '.' == dirname[0]) {
+		if (ignore_hidden && '.' == base_name[0]) {
 			if (verbose) {
-				printf("Skipping hidden directory \"%s\".../\n", filepath);
+				printf("Skipping hidden directory \"%s\".../\n", path);
 			}
 
-			free(dirname);
+			free(dir_path);
 			return FTW_SKIP_SUBTREE;
 		}
 
 		if (verbose) {
-			printf("Entering directory \"%s\".../\n", filepath);
+			printf("Entering directory \"%s\".../\n", path);
 		}
 
-		free(dirname);
+		free(dir_path);
 	} else if (typeflag == FTW_DNR) {
-		printf("ERROR %s/ (unreadable)\n", filepath);
+		printf("ERROR %s/ (unreadable)\n", path);
 	} else {
-		printf("ERROR %s (unknown)\n", filepath);
+		printf("ERROR %s (unknown)\n",path);
 	}
-	
+
 	return FTW_CONTINUE;
 }
 
 
 int queue_directory_tree(const char *const dirpath) {
 	int result;
-	
+
 	/* Invalid directory path? */
 	if (dirpath == NULL || *dirpath == '\0') {
 		return errno = EINVAL;
 	}
-	
+
 	result = nftw(dirpath, queue_entry, USE_FDS, FTW_PHYS | FTW_ACTIONRETVAL);
 	if (result >= 0) {
 		errno = result;
 	}
-	
+
 	return errno;
 }
 
 int connect_to_redis(const char *hostname, const int port) {
 	struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 	redis_c = redisConnectWithTimeout(hostname, port, timeout);
-	
+
 	if (redis_c == NULL || redis_c->err) {
 		if (redis_c) {
 			printf("ERROR Can't connect to Redis: %s\n", redis_c->errstr);
@@ -122,7 +124,7 @@ int connect_to_redis(const char *hostname, const int port) {
 
 		return EXIT_FAILURE;
 	}
-	
+
 	return 0;
 }
 
@@ -152,7 +154,7 @@ int main(int argc, char *argv[]) {
 	// Default values for parameters.
 	int redis_port = 6379;
 	char *redis_address = "127.0.0.1";
-	
+
 	// Parse our arguments.
 	int option = 0;
 	while ((option = getopt(argc, argv,"hiva:p:q:")) != -1) {
