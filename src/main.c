@@ -57,7 +57,9 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 		}
 
 		if (ignore_hidden && '.' == filename[0]) {
-			printf("Skipping hidden file \"%s\".../\n", filepath);
+			if (verbose) {
+				printf("Skipping hidden file \"%s\".../\n", filepath);
+			}
 		} else {
 			freeReplyObject(redisCommand(redis_c,"LPUSH %s %s", queue_name, filepath));
 		}
@@ -67,7 +69,10 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 		char *dirname = basename(strdup(filepath));
 
 		if (ignore_hidden && '.' == dirname[0]) {
-			printf("Skipping hidden directory \"%s\".../\n", filepath);
+			if (verbose) {
+				printf("Skipping hidden directory \"%s\".../\n", filepath);
+			}
+
 			return FTW_SKIP_SUBTREE;
 		}
 
