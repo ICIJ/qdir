@@ -73,6 +73,7 @@ int queue_entry(const char *filepath, const struct stat *info, const int typefla
 				printf("Skipping hidden directory \"%s\".../\n", filepath);
 			}
 
+			free(dirname);
 			return FTW_SKIP_SUBTREE;
 		}
 
